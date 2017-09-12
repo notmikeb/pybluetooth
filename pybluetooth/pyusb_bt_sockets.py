@@ -112,6 +112,10 @@ def find_all_bt_adapters():
             d.bDeviceSubClass == USB_DEVICE_SUB_CLASS_RF_CONTROLLER and
             d.bDeviceProtocol == USB_DEVICE_PROTOCOL_BLUETOOTH):
             return True
+        if (d.bDeviceClass == 0xe0 and
+            d.bDeviceSubClass == 0x01 and
+            d.bDeviceProtocol == 0x01): # a csr bluetooth dongle
+            return True
 
         # Check if it's a composite device:
         if not (d.bDeviceClass == USB_DEVICE_CLASS_MISCELLANEOUS and
