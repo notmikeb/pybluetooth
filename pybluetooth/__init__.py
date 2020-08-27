@@ -1,12 +1,12 @@
 import binascii
 import logging
-import Queue
+import queue
 from scapy.layers.bluetooth import *
 from threading import Event, RLock, Thread
 
-import hci_event_mask
-import pyusb_bt_sockets
-from connection import ConnectionManager
+from . import hci_event_mask
+from . import pyusb_bt_sockets
+from .connection import ConnectionManager
 
 LOG = logging.getLogger("pybluetooth")
 

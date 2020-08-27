@@ -2,7 +2,7 @@
 """
 
 import logging
-import Queue
+import queue
 import time
 
 from scapy.layers.bluetooth import *

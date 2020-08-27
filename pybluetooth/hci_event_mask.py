@@ -99,5 +99,5 @@ def all_reserved_str():
 
 if __name__ == '__main__':
     import binascii
-    print "all_enabled: 0x%x" % all_enabled()
-    print "all_enabled_str: %s" % binascii.hexlify(all_enabled_str())
+    print("all_enabled: 0x%x" % all_enabled())
+    print ("all_enabled_str: %s" % binascii.hexlify)(all_enabled_str())

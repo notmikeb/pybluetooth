@@ -6,8 +6,8 @@ except:
 try:
     import tkMessageBox as pop_up
 except:
-    import tkinter.tkMessageBox as pop_up
-
+    #import tkinter.tkMessageBox as pop_up
+    import tkinter.messagebox as pop_up
 import time
 
 EMPTY_TITLE_ERROR_MESSAGE_SAVE = "Please write the name of the file you want to save in the given field."

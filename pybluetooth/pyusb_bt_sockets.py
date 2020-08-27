@@ -89,13 +89,13 @@ class PyUSBBluetoothHCISocket(SuperSocket):
         data = "\4" + data  # Prepend H4 'Event' packet indicator
         scapy_packet = HCI_Hdr(data)
         LOG.debug("recv %s" % scapy_packet.lastlayer().summary())
-        LOG.debug("recv bytes: " + binascii.hexlify(data))
+        LOG.debug("recv bytes: {}".format(binascii.hexlify(data.encode('utf8'))))
         return scapy_packet
 
     def send(self, scapy_packet):
         data = str(scapy_packet)
         LOG.debug("send %s" % scapy_packet.lastlayer().summary())
-        LOG.debug("send bytes: " + binascii.hexlify(data))
+        LOG.debug("send bytes: {}".format(binascii.hexlify(data.encode('utf8'))))
         data = data[1:]  # Cut off the H4 'Command' packet indicator (0x02)
         sent_len = self.pyusb_dev.ctrl_transfer(
             data_or_wLength=data, **USB_HCI_CMD_REQUEST_PARAMS)
@@ -107,16 +107,19 @@ class PyUSBBluetoothHCISocket(SuperSocket):
 
 def find_all_bt_adapters():
     def bt_adapter_matcher(d):
+        #LOG.fatal(d)
         # Check if the device is a "Single Function Primary Controller":
         if (d.bDeviceClass == USB_DEVICE_CLASS_WIRELESS_CONTROLLER and
             d.bDeviceSubClass == USB_DEVICE_SUB_CLASS_RF_CONTROLLER and
             d.bDeviceProtocol == USB_DEVICE_PROTOCOL_BLUETOOTH):
+            print("found bDeviceClass")
             return True
         if (d.bDeviceClass == 0xe0 and
             d.bDeviceSubClass == 0x01 and
             d.bDeviceProtocol == 0x01): # a csr bluetooth dongle
+            print("found dongle")
             return True
-
+        LOG.error(d)
         # Check if it's a composite device:
         if not (d.bDeviceClass == USB_DEVICE_CLASS_MISCELLANEOUS and
                 d.bDeviceSubClass == USB_DEVICE_SUB_CLASS_COMMON_CLASS and
@@ -134,7 +137,7 @@ def find_all_bt_adapters():
         return False
 
     devs = set()
-
+    LOG.error("This is a set()")
     matchers = [CUSTOM_USB_DEVICE_MATCHER, bt_adapter_matcher]
     for matcher in matchers:
         if not matcher:
@@ -166,6 +169,8 @@ def find_first_bt_adapter_pyusb_device_or_raise():
     if len(pyusb_devs) == 0:
         raise PyUSBBluetoothNoAdapterFoundException(
             "No Bluetooth adapters found!")
+    else:
+        print("len(pyusb_devs) {}".format(pyusb_devs))
 
     def _is_usable_device(pyusb_dev):
         try:
@@ -173,9 +178,12 @@ def find_first_bt_adapter_pyusb_device_or_raise():
             PyUSBBluetoothHCISocket(pyusb_dev).hci_reset()
             return True
         except:
+            import traceback
+            traceback.print_exc()
             return False
 
     pyusb_devs = filter(_is_usable_device, pyusb_devs)
+    pyusb_devs = [i for i in pyusb_devs]
 
     if len(pyusb_devs) == 0:
         raise PyUSBBluetoothNoAdapterFoundException(
