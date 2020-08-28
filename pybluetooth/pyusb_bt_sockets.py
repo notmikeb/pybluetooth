@@ -48,6 +48,7 @@ class PyUSBBluetoothHCISocket(SuperSocket):
 
     def __init__(self, pyusb_dev):
         self.pyusb_dev = pyusb_dev
+        self.__DELAY = False
 
         # Drain any data that was already pending:
         while self.recv(timeout_secs=0.001):
@@ -77,12 +78,19 @@ class PyUSBBluetoothHCISocket(SuperSocket):
         # after it? Or is each event guaranteed to be put in a USB packet of
         # its own?
         try:
+            import time
+            if self.__DELAY:
+                time.sleep(1)
             data_array = self.pyusb_dev.read(
                 USB_ENDPOINT_HCI_EVT, 512, int(timeout_secs * 50000.0))
         except usb.core.USBError as e:
             if e.errno == errno.ETIMEDOUT:
                 return None
+            elif e.errno == None:
+                """ sometimes it return no error when timeout """
+                return None
             else:
+                LOG.error("e.errno is {}".format(e.errno))
                 raise e
 
         data = ''.join([chr(c) for c in data_array])  # Ugh.. array return val
@@ -93,12 +101,23 @@ class PyUSBBluetoothHCISocket(SuperSocket):
         return scapy_packet
 
     def send(self, scapy_packet):
-        data = str(scapy_packet)
-        LOG.debug("send %s" % scapy_packet.lastlayer().summary())
-        LOG.debug("send bytes: {}".format(binascii.hexlify(data.encode('utf8'))))
+        try:
+            data = scapy_packet.build()
+        except:
+            # show more debug information about packet content and traceback
+            import traceback
+            traceback.print_exc()
+            LOG.error(scapy_packet.show())
+            LOG.error(scapy_packet.show2())
+        LOG.error("data is {}".format(data))
+        LOG.debug("send {}".format(scapy_packet.lastlayer().summary()))
+        LOG.debug("send bytes: {}".format(binascii.hexlify(data)))
         data = data[1:]  # Cut off the H4 'Command' packet indicator (0x02)
         sent_len = self.pyusb_dev.ctrl_transfer(
             data_or_wLength=data, **USB_HCI_CMD_REQUEST_PARAMS)
+        import time
+        if self.__DELAY:
+            time.sleep(1)
         l = len(data)
         if sent_len != l:
             raise PyUSBBluetoothUserSocketException(

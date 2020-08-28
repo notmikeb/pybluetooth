@@ -20,7 +20,7 @@ class BTStackSynchronousUtils(object):
 
     def scan(self, duration_secs=5.0):
         LOG.debug("BTStackSynchronousUtils scan()")
-        adv_report_queue = Queue.Queue()
+        adv_report_queue = queue.Queue()
 
         def adv_packet_filter(packet):
             return packet.getlayer(HCI_LE_Meta_Advertising_Report) is not None
@@ -41,7 +41,7 @@ class BTStackSynchronousUtils(object):
 
     def scan_until_match(self, packet_filter, timeout=None):
         LOG.debug("BTStackSynchronousUtils scan_until_match()")
-        adv_report_queue = Queue.Queue()
+        adv_report_queue = queue.Queue()
 
         def adv_packet_filter(packet):
             if packet.getlayer(HCI_LE_Meta_Advertising_Report) is None:

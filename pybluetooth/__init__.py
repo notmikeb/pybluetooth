@@ -37,7 +37,7 @@ class CallbackThread(KillableThread):
         and act upon received packets. """
     def __init__(self):
         super(CallbackThread, self).__init__()
-        self.packet_queue = Queue.Queue()
+        self.packet_queue = queue.Queue()
         self.lock = RLock()
         self.callbacks = dict()
 
@@ -73,7 +73,7 @@ class CallbackThread(KillableThread):
     def run_loop(self):
         try:
             packet = self.packet_queue.get(block=True, timeout=0.1)
-        except Queue.Empty:
+        except queue.Empty:
             return  # Nothing to receive, loop again
         self.dispatch_packet(packet)
 
@@ -148,7 +148,7 @@ class HCIThread(RxThread):
         response_queue = None
         if response_filter_creator:
             response_filter = response_filter_creator(scapy_hci_cmd)
-            response_queue = Queue.Queue()
+            response_queue = queue.Queue()
             self.add_packet_queue(response_filter, response_queue)
 
         full_hci_cmd = HCI_Hdr() / HCI_Command_Hdr() / scapy_hci_cmd
@@ -158,7 +158,7 @@ class HCIThread(RxThread):
             try:
                 cmd_status = response_queue.get(
                     block=True, timeout=response_timeout_secs)
-            except Queue.Empty:
+            except queue.Empty:
                 raise HCIResponseTimeoutException(
                     "HCI command timed out: %s" %
                     full_hci_cmd.lastlayer().summary())
@@ -200,8 +200,8 @@ class HCIThread(RxThread):
                            window_ms=10, **kwargs):
         scan_type = 1 if active_scanning else 0
         self.send_cmd(HCI_Cmd_LE_Set_Scan_Parameters(
-            type=scan_type, interval=interval_ms * 0.625,
-            window=window_ms * 0.625, **kwargs))
+            type=scan_type, interval=int(interval_ms * 0.625),
+            window=int(window_ms * 0.625), **kwargs))
 
     def cmd_le_create_connection(self, address,
                                  is_identity_address=False,
@@ -248,7 +248,7 @@ class BTStack(object):
         LOG.debug("BTStack start()")
 
         # During reset, just ignore and eat all packets that might come in:
-        ignore_queue = Queue.Queue()
+        ignore_queue = queue.Queue()
         self.hci.add_packet_queue(lambda packet: True, ignore_queue)
         self.hci.start()
         self.hci.cmd_reset()
