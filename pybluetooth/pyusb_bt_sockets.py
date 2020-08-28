@@ -78,7 +78,7 @@ class PyUSBBluetoothHCISocket(SuperSocket):
         # its own?
         try:
             data_array = self.pyusb_dev.read(
-                USB_ENDPOINT_HCI_EVT, 512, int(timeout_secs * 1000.0))
+                USB_ENDPOINT_HCI_EVT, 512, int(timeout_secs * 50000.0))
         except usb.core.USBError as e:
             if e.errno == errno.ETIMEDOUT:
                 return None
@@ -119,7 +119,7 @@ def find_all_bt_adapters():
             d.bDeviceProtocol == 0x01): # a csr bluetooth dongle
             print("found dongle")
             return True
-        LOG.error(d)
+        LOG.error( "matcher {}".format( repr(d)[:70]))
         # Check if it's a composite device:
         if not (d.bDeviceClass == USB_DEVICE_CLASS_MISCELLANEOUS and
                 d.bDeviceSubClass == USB_DEVICE_SUB_CLASS_COMMON_CLASS and
@@ -143,7 +143,7 @@ def find_all_bt_adapters():
         if not matcher:
             continue
         devs |= set(usb.core.find(find_all=True, custom_match=matcher))
-
+    LOG.error("final devs sets is {}".format(len(devs)) )
     # Unfortunately, usb.core.Device doesn't implement __eq__(),
     # see https://github.com/walac/pyusb/issues/147.
     # So filter out dupes here:
@@ -170,7 +170,7 @@ def find_first_bt_adapter_pyusb_device_or_raise():
         raise PyUSBBluetoothNoAdapterFoundException(
             "No Bluetooth adapters found!")
     else:
-        print("len(pyusb_devs) {}".format(pyusb_devs))
+        LOG.error("len(pyusb_devs) {}".format(pyusb_devs))
 
     def _is_usable_device(pyusb_dev):
         try:
@@ -181,9 +181,10 @@ def find_first_bt_adapter_pyusb_device_or_raise():
             import traceback
             traceback.print_exc()
             return False
-
+    LOG.error("before hci-reset filter len {}".format( len(pyusb_devs) ) )
     pyusb_devs = filter(_is_usable_device, pyusb_devs)
     pyusb_devs = [i for i in pyusb_devs]
+    LOG.error("after hci-reset filter len {}".format( len(pyusb_devs) ) )
 
     if len(pyusb_devs) == 0:
         raise PyUSBBluetoothNoAdapterFoundException(
