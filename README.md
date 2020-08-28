@@ -65,6 +65,28 @@ Dongles that allow the USB info to be changed:
 - CSR based dongles: use PSTool, which is part of CSR's' BlueSuite developer tools.
 - ...
 
+### Tested Env
+20200828 test on win10 with mbp2020
+astroid==2.4.2
+atpublic==2.0
+colorama==0.4.3
+isort==5.4.2
+lazy-object-proxy==1.4.3
+libusb==1.0.22b9
+mccabe==0.6.1
+pylint==2.6.0
+pyusb==1.0.2
+scapy==2.4.3
+six==1.15.0
+toml==0.10.1
+typed-ast==1.4.1
+typing-extensions==3.7.4.3
+usb==0.0.83.dev0
+wrapt==1.12.1
+Python 3.7.6
+
+
+
 [0]: http://www.pebble.com/
 [1]: http://walac.github.io/pyusb/
 [2]: http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=CSR8510
