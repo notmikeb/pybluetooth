@@ -93,6 +93,7 @@ class ConnectionManager(object):
 
     def find_connection_by_filter_assert_unique(self, filter_func):
         matches = filter(filter_func, self.connections)
+        matches = [m for m in matches] # fixed convert iterator to array
         assert len(matches) <= 1
         if len(matches) == 1:
             return matches[0]

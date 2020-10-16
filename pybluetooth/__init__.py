@@ -91,7 +91,7 @@ class RxThread(KillableThread):
             return  # Nothing to receive, loop again
         matching_queues = self.queues_filtered_by_packet(packet)
         if not matching_queues:
-            LOG.warn(
+            LOG.warning(
                 "Dropping packet, no handler queue!\n%s" % packet.show())
         for queue in matching_queues:
             queue.put(packet)

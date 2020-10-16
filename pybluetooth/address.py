@@ -14,7 +14,10 @@ class Address(object):
         if packet.getlayer(HCI_LE_Meta_Connection_Complete) is not None:
             return Address(packet.paddr, packet.patype)
         if packet.getlayer(HCI_LE_Meta_Advertising_Report) is not None:
-            return Address(packet.addr, packet.atype)
+            print(dir(packet)) # does not have addr attribute
+            k = packet.getlayer(HCI_LE_Meta_Advertising_Report)
+            print(dir(k)) # need to covert as specific type so we could use its attrbute
+            return Address(k.addr, k.atype)
         raise Exception("No mapping to Address for packet %s" % packet)
 
     def __init__(self, bd_addr, address_type=AddressType.random):

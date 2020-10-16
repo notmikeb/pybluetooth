@@ -5,7 +5,7 @@ try:
 except ImportError:
     from mock import MagicMock
 
-from Queue import Queue, Empty
+from queue import Queue, Empty
 from scapy.layers.bluetooth import *
 from scapy.packet import Packet
 from threading import Semaphore
@@ -37,7 +37,7 @@ class TestRxThread(unittest.TestCase):
         self.rx_thread.add_packet_queue(lambda packet: True, queue)
         self.simulate_recv_packet(Packet())
         packet = queue.get(block=True, timeout=0.1)
-        self.assertEquals(packet, Packet())
+        self.assertEqual(packet, Packet())
 
         # Remove the queue, receive a packet, it shouldn't get added:
         self.rx_thread.remove_packet_queue(queue)
@@ -65,7 +65,7 @@ class TestRxThread(unittest.TestCase):
             HCI_LE_Meta_Advertising_Report())
         self.simulate_recv_packet(adv_evt_packet)
         recv_packet = queue.get(block=True, timeout=0.1)
-        self.assertEquals(recv_packet, adv_evt_packet)
+        self.assertEqual(recv_packet, adv_evt_packet)
 
 
 if __name__ == '__main__':

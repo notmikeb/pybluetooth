@@ -2,8 +2,8 @@ import binascii
 
 from scapy.layers.bluetooth import *
 from scapy.utils import mac2str, str2mac
-from pybluetooth.address import *
-
+from pybluetooth.address import Address
+from pybluetooth.address import AddressType
 
 def test_address_from_hci_le_connection_complete_packet():
     raw_data = binascii.unhexlify(
