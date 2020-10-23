@@ -181,6 +181,12 @@ class HCIThread(RxThread):
     def cmd_le_read_buffer_size(self):
         self.send_cmd(HCI_Cmd_LE_Read_Buffer_Size())
 
+    def cmd_write_inquiry_scan_activity(self):
+        self.send_cmd(HCI_Cmd_Write_Inquiry_Scan_Actitivity())
+    def cmd_write_inquiry_scan_type(self):
+        self.send_cmd(HCI_Cmd_Write_Inquiry_Scan_Type())
+    def cmd_write_scan_enable(self, enable):
+        self.send_cmd(HCI_Cmd_Write_Scan_Enable(enable=enable))
     def cmd_read_bd_addr(self):
         def _create_read_bd_addr_response_filter(request_packet):
             def _read_bd_addr_response_filter(packet):
@@ -264,7 +270,11 @@ class BTStack(object):
         #  sends any data to an LE Controller":
         self.hci.cmd_le_read_buffer_size()
 
+        self.hci.cmd_set_event_mask(mask = b"\xff"*8)
         self.address = self.hci.cmd_read_bd_addr()
+        self.hci.cmd_write_inquiry_scan_type()
+        self.hci.cmd_write_inquiry_scan_activity()
+        self.hci.cmd_write_scan_enable(1)
 
     def start_scan(self):
         assert self.is_scannning_enabled is False

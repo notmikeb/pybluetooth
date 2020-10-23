@@ -20,9 +20,23 @@ b.start()
 u = BTStackSynchronousUtils(b)
 
 # Scan for a couple seconds, then print out the found reports:
-reports = u.scan(2)
-for report in reports:
-    report.show()
+#reports = u.scan(2)
+#for report in reports:
+#    report.show()
 
+import signal
+
+def sigHandler(x, y):
+    print("signal Handler '{} '{}".format(x, y))
+    import sys
+    sys.exit(-1)
+
+
+signal.signal(signal.SIGTERM, sigHandler)
+
+for i in range(100):
+    import time
+    time.sleep(5)
+    print('.', end='', flush=True)
 # Tear down the stack:
 b.quit()
