@@ -49,6 +49,10 @@ class PyUSBBluetoothHCISocket(SuperSocket):
     def __init__(self, pyusb_dev):
         self.pyusb_dev = pyusb_dev
         self.__DELAY = False
+        import os
+        if os.name == "posix":
+            self.__DELAY = True
+            LOG.error("Enter delay mode. send each packet and sleep")
 
         # Drain any data that was already pending:
         while self.recv(timeout_secs=0.001):
@@ -93,11 +97,11 @@ class PyUSBBluetoothHCISocket(SuperSocket):
                 LOG.error("e.errno is {}".format(e.errno))
                 raise e
 
-        data = ''.join([chr(c) for c in data_array])  # Ugh.. array return val
-        data = "\4" + data  # Prepend H4 'Event' packet indicator
-        scapy_packet = HCI_Hdr(data)
+        #data = ''.join([chr(c) for c in data_array])  # Ugh.. array return val
+        #data = "\4" + data  # Prepend H4 'Event' packet indicator
+        scapy_packet = HCI_Hdr( b'\x04' + data_array)
         LOG.debug("recv %s" % scapy_packet.lastlayer().summary())
-        LOG.debug("recv bytes: {}".format(binascii.hexlify(data.encode('utf8'))))
+        LOG.debug("recv bytes: {}".format(binascii.hexlify(data_array)))
         return scapy_packet
 
     def send(self, scapy_packet):
@@ -193,6 +197,11 @@ def find_first_bt_adapter_pyusb_device_or_raise():
 
     def _is_usable_device(pyusb_dev):
         try:
+            LOG.info("check device has been detach. use reattach.py to reset this")
+            dev = pyusb_dev
+            if dev.is_kernel_driver_active(0):
+                reattach = True
+                dev.detach_kernel_driver(0)
             pyusb_dev.set_configuration()
             PyUSBBluetoothHCISocket(pyusb_dev).hci_reset()
             return True
