@@ -1065,6 +1065,32 @@ class HCI_Cmd_LE_Long_Term_Key_Request_Negative_Reply(Packet):
     fields_desc = [LEShortField("handle", 0), ]
 
 
+class HCI_Cmd_Write_Inquiry_Scan_Actitivity(Packet):
+    name = "Write HCI_Cmd_Write_Inquiry_Scan_Actitivity"
+    fields_desc = [LEShortField("interval", 0x0800),
+    LEShortField("window", 0x0012),
+    ]
+
+class HCI_Cmd_Write_Page_Scan_Type(Packet):
+    name = "Write HCI_Cmd_Write_Page_Scan"
+    fields_desc = [
+        ByteField("type", 0x01),
+    ]
+
+class HCI_Cmd_Write_Inquiry_Scan_Type(Packet):
+    name = "Write HCI_Cmd_Write_Inquiry_Scan"
+    fields_desc = [
+        ByteField("type", 0x01),
+    ]
+
+class HCI_Cmd_Write_Scan_Enable(Packet):
+    name = "Write HCI_Cmd_Write_Scan_Enable"
+    fields_desc = [
+        ByteField("enable", 0x01),
+    ]
+
+
+
 class HCI_Cmd_LE_Long_Term_Key_Request_Reply(Packet):
     name = "LE Long Term Key Request Reply"
     fields_desc = [LEShortField("handle", 0),
@@ -1258,6 +1284,12 @@ bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Start_Encryption_Request, opcode=0x2019)
 
 bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Long_Term_Key_Request_Reply, opcode=0x201a)  # noqa: E501
 bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Long_Term_Key_Request_Negative_Reply, opcode=0x201b)  # noqa: E501
+
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Inquiry_Scan_Actitivity, opcode= 0x0c1e)
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Inquiry_Scan_Type, opcode= 0x0c43)
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Scan_Enable, opcode= 0x0c1a)
+
+
 
 bind_layers(HCI_Event_Hdr, HCI_Event_Disconnection_Complete, code=0x5)
 bind_layers(HCI_Event_Hdr, HCI_Event_Encryption_Change, code=0x8)
