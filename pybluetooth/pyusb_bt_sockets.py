@@ -100,7 +100,10 @@ class PyUSBBluetoothHCISocket(SuperSocket):
         #data = ''.join([chr(c) for c in data_array])  # Ugh.. array return val
         #data = "\4" + data  # Prepend H4 'Event' packet indicator
         scapy_packet = HCI_Hdr( b'\x04' + data_array)
-        LOG.debug("recv %s" % scapy_packet.lastlayer().summary())
+        status = 'x'
+        if hasattr(scapy_packet.lastlayer(), 'status'):
+            status = scapy_packet.lastlayer().status
+        LOG.debug("recv summary:'{}' status:'{}'".format(scapy_packet.lastlayer().summary(), status))
         LOG.debug("recv bytes: {}".format(binascii.hexlify(data_array)))
         return scapy_packet
 
@@ -113,7 +116,7 @@ class PyUSBBluetoothHCISocket(SuperSocket):
             traceback.print_exc()
             LOG.error(scapy_packet.show())
             LOG.error(scapy_packet.show2())
-        LOG.error("data is {}".format(data))
+        LOG.error("send data is {}".format(data))
         LOG.debug("send {}".format(scapy_packet.lastlayer().summary()))
         LOG.debug("send bytes: {}".format(binascii.hexlify(data)))
         data = data[1:]  # Cut off the H4 'Command' packet indicator (0x02)

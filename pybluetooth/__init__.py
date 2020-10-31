@@ -181,6 +181,11 @@ class HCIThread(RxThread):
     def cmd_le_read_buffer_size(self):
         self.send_cmd(HCI_Cmd_LE_Read_Buffer_Size())
 
+    def cmd_write_local_name(self, name):
+        name = name + (b'\x00' * (248-len(name))) # padding up to 248 length
+        self.send_cmd(HCI_Cmd_Write_Local_Name(name = name))
+    def cmd_read_local_name(self ):
+        self.send_cmd(HCI_Cmd_Read_Local_Name())
     def cmd_write_inquiry_scan_activity(self):
         self.send_cmd(HCI_Cmd_Write_Inquiry_Scan_Actitivity())
     def cmd_write_inquiry_scan_type(self):
@@ -261,6 +266,8 @@ class BTStack(object):
         self.hci.remove_packet_queue(ignore_queue)
 
         self.cb_thread.start()
+        self.hci.cmd_read_local_name()
+        self.hci.cmd_write_local_name("day1".encode('utf8'))
 
         self.hci.cmd_set_event_filter_clear_all_filters()
         self.hci.cmd_set_event_mask()
@@ -269,6 +276,8 @@ class BTStack(object):
         # "The LE_Read_Buffer_Size command must be issued by the Host before it
         #  sends any data to an LE Controller":
         self.hci.cmd_le_read_buffer_size()
+        self.hci.cmd_write_local_name("day1".encode('utf8'))
+        self.hci.cmd_read_local_name()
 
         self.hci.cmd_set_event_mask(mask = b"\xff"*8)
         self.address = self.hci.cmd_read_bd_addr()

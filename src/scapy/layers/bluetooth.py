@@ -928,6 +928,9 @@ class HCI_Cmd_Write_Local_Name(Packet):
     name = "Write Local Name"
     fields_desc = [StrField("name", "")]
 
+class HCI_Cmd_Read_Local_Name(Packet):
+    name = "Read Local Name"
+    fields_desc = []
 
 class HCI_Cmd_Write_Extended_Inquiry_Response(Packet):
     name = "Write Extended Inquiry Response"
@@ -1259,6 +1262,7 @@ bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Host_Supported, opcode=0x0c6d)
 bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Extended_Inquiry_Response, opcode=0x0c52)  # noqa: E501
 bind_layers(HCI_Command_Hdr, HCI_Cmd_Read_BD_Addr, opcode=0x1009)
 bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Local_Name, opcode=0x0c13)
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Read_Local_Name, opcode=0x0c14)
 bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Read_Buffer_Size, opcode=0x2002)
 bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Set_Random_Address, opcode=0x2005)
 bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Set_Advertising_Parameters, opcode=0x2006)  # noqa: E501
