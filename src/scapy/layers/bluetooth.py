@@ -953,7 +953,68 @@ class HCI_Cmd_LE_Set_Scan_Enable(Packet):
     fields_desc = [ByteField("enable", 1),
                    ByteField("filter_dups", 1), ]
 
+# newadd
+class HCI_Cmd_Host_Buffer_Size(Packet):
+    name = "Set HCI_Cmd_Host_Buffer_Size"
+    fields_desc = [
+        LEShortField("host_acl_length", 0x069b),
+        ByteField("host_sco_length", 0xff),
+        LEShortField("total_acl_data_packets",0x14),
+        LEShortField("total_num",0x0a),]
 
+class HCI_Cmd_Write_Simple_Pairing_Mode(Packet):
+    name = "Set SHCI_Cmd_Write_Simple_Pairing_Mode"
+    fields_desc = [ByteField("enable", 0),
+                    ]
+class HCI_Cmd_Write_Inquiry_Mode(Packet):
+    name = "Set HCI_Cmd_Write_Inquiry_Mode"
+    fields_desc = [ByteField("mode", 1),
+                    ]
+class HCI_Cmd_Write_Page_Scan_Type(Packet):
+    name = "Set HCI_Cmd_Write_Page_Scan_Type"
+    fields_desc = [ByteField("type", 1),
+                    ]
+class HCI_Cmd_Write_Inquiry_Scan_Type(Packet):
+    name = "Set HCI_Cmd_Write_Inquiry_Scan_Type"
+    fields_desc = [ByteField("type", 1),
+                    ]
+class HCI_Cmd_Write_Default_Link_Policy_Settings(Packet):
+    name = "Set HCI_Cmd_Write_Default_Link_Policy_Settings"
+    fields_desc = [LEShortField("default_link_policy_setting", 0x0005),
+                    ]
+class HCI_Cmd_Write_Page_Timeout(Packet):
+    name = "Set HCI_Cmd_Write_Page_Timeout"
+    fields_desc = [LEShortField("page_timeout", 0x2000),]
+
+class HCI_Cmd_Write_Inquiry_Scan_Activity(Packet):
+    name = "HCI_Cmd_Write_Inquiry_Scan_Activity"
+    fields_desc = [
+        LEShortField("interval", 0x0800),
+        LEShortField("window", 0x0012),
+    ]
+
+class HCI_Cmd_Write_Scan_Enable(Packet):
+    name = "Set Scan Enable"
+    fields_desc = [ByteField("enable", 1),
+                    ]
+class HCI_Cmd_Write_Class_Of_Device(Packet):
+    name = "Write COD"
+    fields_desc = [StrFixedLenField("cod", b"\x0c\x02\x5a", 3)]  # noqa: E501
+class HCI_Cmd_Write_Current_IAC_LAP(Packet):
+    name = "Write IAC LAP"
+    fields_desc = [
+        ByteField("num_current_iac", 1),
+        StrFixedLenField("iac_lap", b"\x33\x8b\x33", 3)]  # noqa: E501
+
+
+class HCI_Cmd_Write_Local_Name(Packet):
+    name = "Write Local Name"
+    fields_desc = [
+                   StrFixedLenField("local_name", b'\x00' * 248, 248), ]
+class HCI_Cmd_Read_Local_Name(Packet):
+    name = "Read Local Name"
+    fields_desc = [
+                   ]
 class HCI_Cmd_Disconnect(Packet):
     name = "Disconnect"
     fields_desc = [XLEShortField("handle", 0),
@@ -1144,6 +1205,9 @@ class HCI_Cmd_Complete_Read_BD_Addr(Packet):
     name = "Read BD Addr"
     fields_desc = [LEMACField("addr", None), ]
 
+class HCI_Cmd_Complete_Read_Local_Name(Packet):
+    name = "Read Local Name"
+    fields_desc = [StrFixedLenField("local_name", b'\x00' * 248, 248), ]
 
 class HCI_Cmd_Complete_LE_Read_White_List_Size(Packet):
     name = "LE Read White List Size"
@@ -1281,8 +1345,8 @@ bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Remove_Device_From_White_List, opcode=0x
 bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Connection_Update, opcode=0x2013)
 bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Read_Remote_Used_Features, opcode=0x2016)  # noqa: E501
 
-
 bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Start_Encryption_Request, opcode=0x2019)  # noqa: E501
+
 
 bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Start_Encryption_Request, opcode=0x2019)  # noqa: E501
 
@@ -1294,6 +1358,29 @@ bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Inquiry_Scan_Type, opcode= 0x0c43)
 bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Scan_Enable, opcode= 0x0c1a)
 
 
+# newadd
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Host_Buffer_Size, opcode=0x0c33)
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Simple_Pairing_Mode, opcode=0x0c56)
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Inquiry_Mode, opcode=0x0c45)
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Page_Scan_Type, opcode=0x0c47)
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Inquiry_Scan_Type, opcode=0x0c43)
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Page_Timeout, opcode=0x0c18)
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Default_Link_Policy_Settings, opcode=0x080f)
+
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Class_Of_Device, opcode=0x0c24)
+
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Local_Name, opcode=0x0c13)
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Read_Local_Name, opcode=0x0c14)
+
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Inquiry_Scan_Activity, opcode=0x0c1e)
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Scan_Enable, opcode=0x0c1a)
+bind_layers(HCI_Command_Hdr, HCI_Cmd_Write_Current_IAC_LAP, opcode=0x0c3a)
+
+
+bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Start_Encryption_Request, opcode=0x2019)  # noqa: E501
+
+bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Long_Term_Key_Request_Reply, opcode=0x201a)  # noqa: E501
+bind_layers(HCI_Command_Hdr, HCI_Cmd_LE_Long_Term_Key_Request_Negative_Reply, opcode=0x201b)  # noqa: E501
 
 bind_layers(HCI_Event_Hdr, HCI_Event_Disconnection_Complete, code=0x5)
 bind_layers(HCI_Event_Hdr, HCI_Event_Encryption_Change, code=0x8)
@@ -1304,6 +1391,8 @@ bind_layers(HCI_Event_Hdr, HCI_Event_LE_Meta, code=0x3e)
 
 bind_layers(HCI_Event_Command_Complete, HCI_Cmd_Complete_Read_BD_Addr, opcode=0x1009)  # noqa: E501
 bind_layers(HCI_Event_Command_Complete, HCI_Cmd_Complete_LE_Read_White_List_Size, opcode=0x200f)  # noqa: E501
+
+bind_layers(HCI_Event_Command_Complete, HCI_Cmd_Complete_Read_Local_Name, opcode=0x0c14)  # noqa: E501
 
 bind_layers(HCI_Event_LE_Meta, HCI_LE_Meta_Connection_Complete, event=1)
 bind_layers(HCI_Event_LE_Meta, HCI_LE_Meta_Advertising_Reports, event=2)
